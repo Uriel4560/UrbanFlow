@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" width="200" height="240">
+  <!-- Background -->
+  <rect width="200" height="240" fill="white"/>
+  
+  <!-- Campera/Jacket Body -->
+  <g id="jacket">
+    <!-- Main body - Red -->
+    <path d="M 60 80 L 60 160 Q 60 180 80 180 L 120 180 Q 140 180 140 160 L 140 80 Q 140 60 125 55 L 75 55 Q 60 60 60 80 Z" fill="#C41E3A" stroke="#8B1428" stroke-width="2"/>
+    
+    <!-- Zipper detail -->
+    <line x1="100" y1="80" x2="100" y2="170" stroke="#666" stroke-width="2"/>
+    <circle cx="100" cy="85" r="3" fill="#666"/>
+    <circle cx="100" cy="95" r="2" fill="#666"/>
+    <circle cx="100" cy="105" r="2" fill="#666"/>
+    <circle cx="100" cy="115" r="2" fill="#666"/>
+    <circle cx="100" cy="125" r="2" fill="#666"/>
+    <circle cx="100" cy="135" r="2" fill="#666"/>
+    <circle cx="100" cy="145" r="2" fill="#666"/>
+    <circle cx="100" cy="155" r="2" fill="#666"/>
+    <circle cx="100" cy="165" r="3" fill="#666"/>
+    
+    <!-- Left sleeve - White/Light -->
+    <path d="M 60 85 L 30 90 L 30 140 Q 30 150 40 155 L 60 150 Z" fill="white" stroke="#8B1428" stroke-width="2"/>
+    
+    <!-- Right sleeve - White/Light -->
+    <path d="M 140 85 L 170 90 L 170 140 Q 170 150 160 155 L 140 150 Z" fill="white" stroke="#8B1428" stroke-width="2"/>
+    
+    <!-- Collar -->
+    <path d="M 75 55 Q 100 50 125 55 L 120 70 Q 100 68 80 70 Z" fill="#A01830" stroke="#8B1428" stroke-width="1.5"/>
+    
+    <!-- Cuff details on sleeves -->
+    <ellipse cx="35" cy="155" rx="8" ry="5" fill="#8B1428" opacity="0.3"/>
+    <ellipse cx="165" cy="155" rx="8" ry="5" fill="#8B1428" opacity="0.3"/>
+  </g>
+  
+  <!-- Text - URBANFLOW -->
+  <text x="100" y="215" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#C41E3A" text-anchor="middle" letter-spacing="2">
+    URBANFLOW
+  </text>
+</svg>

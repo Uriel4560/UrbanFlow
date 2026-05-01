@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UrbanFlow - Panel de Administración</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles-ecommerce.css">
+    <link rel="stylesheet" href="styles-admin.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Pantalla de Login -->
+        <div v-if="!autenticado" class="login-page">
+            <div class="login-container">
+                <div class="login-box">
+                    <div class="login-header">
+                        <img src="img/logo-urbanflow.png" alt="UrbanFlow" class="login-logo">
+                        <h1>UrbanFlow Admin</h1>
+                        <p>Panel de Administración</p>
+                    </div>
+                    
+                    <form @submit.prevent="login" class="login-form">
+                        <div class="form-group">
+                            <label for="usuario">Usuario:</label>
+                            <input 
+                                v-model="credenciales.usuario" 
+                                type="text" 
+                                id="usuario" 
+                                placeholder="Ingresa tu usuario"
+                                required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contraseña">Contraseña:</label>
+                            <input 
+                                v-model="credenciales.contraseña" 
+                                type="password" 
+                                id="contraseña" 
+                                placeholder="Ingresa tu contraseña"
+                                required>
+                        </div>
+                        
+                        <button type="submit" class="btn-login" :disabled="cargando">
+                            <span v-if="!cargando"><i class="fas fa-sign-in-alt"></i> Ingresar</span>
+                            <span v-else><i class="fas fa-spinner fa-spin"></i> Verificando...</span>
+                        </button>
+                    </form>
+                    
+                    <div v-if="loginError" class="login-error">
+                        <i class="fas fa-exclamation-circle"></i> {{ loginError }}
+                    </div>
+                    
+                    <div class="login-demo">
+                        <p><strong>Demo:</strong></p>
+                        <small>Admin - Usuario: <code>admin</code> | Contraseña: <code>admin123</code></small><br>
+                        <small>Vendedor - Usuario: <code>vendedor</code> | Contraseña: <code>vendedor123</code></small><br>
+                        <small>Gerente - Usuario: <code>gerente</code> | Contraseña: <code>gerente123</code></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Admin (después de login) -->
+        <div v-if="autenticado" class="admin-wrapper">
+            <!-- Notificaciones -->
+            <div v-if="mensaje.tipo" :class="['notificacion', 'notificacion-' + mensaje.tipo]">
+                <i :class="{'fas fa-check-circle': mensaje.tipo === 'exito', 'fas fa-exclamation-circle': mensaje.tipo === 'error', 'fas fa-info-circle': mensaje.tipo === 'info'}"></i>
+                {{ mensaje.texto }}
+            </div>
+
+            <!-- Header/Navbar -->
+            <header class="header">
+                <div class="container">
+                    <div class="logo">
+                        <img src="img/logo-urbanflow.png" alt="UrbanFlow Logo" class="logo-img">
+                        <span class="brand-name">UrbanFlow - Admin</span>
+                    </div>
+                    <div class="header-info">
+                        <span class="user-info">👤 {{ usuarioActual.nombre }}</span>
+                        <button @click="logout" class="btn-logout">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Solo panel de Admin -->
+            <div class="page-admin">
+                <div class="container">
+                    <div class="admin-tabs">
+                        <button @click="adminTab = 'productos'" :class="{activo: adminTab === 'productos'}" class="tab-btn">
+                            <i class="fas fa-shirt"></i> Productos
+                        </button>
+                        <button @click="adminTab = 'clientes'" :class="{activo: adminTab === 'clientes'}" class="tab-btn">
+                            <i class="fas fa-users"></i> Clientes
+                        </button>
+                        <button @click="adminTab = 'ventas'" :class="{activo: adminTab === 'ventas'}" class="tab-btn">
+                            <i class="fas fa-receipt"></i> Ventas
+                        </button>
+                    </div>
+
+                    <!-- Tab Productos -->
+                    <div v-if="adminTab === 'productos'" class="admin-tab-content">
+                        <h2>Gestión de Productos</h2>
+                        <div class="admin-form">
+                            <input v-model="nuevoProducto.codigo" placeholder="Código">
+                            <input v-model="nuevoProducto.nombre" placeholder="Nombre">
+                            <input v-model="nuevoProducto.categoria" placeholder="Categoría (Hombres/Mujeres)">
+                            <input v-model.number="nuevoProducto.precio" type="number" placeholder="Precio (S/)" step="0.01">
+                            <input v-model.number="nuevoProducto.stock" type="number" placeholder="Stock">
+                            <input v-model="nuevoProducto.talla" placeholder="Talla">
+                            <input v-model="nuevoProducto.color" placeholder="Color">
+                            <button @click="agregarProductoAdmin" class="btn-admin-agregar">Agregar Producto</button>
+                        </div>
+
+                        <div class="admin-tabla">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Nombre</th>
+                                        <th>Categoría</th>
+                                        <th>Precio</th>
+                                        <th>Stock</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="p in productos" :key="p.id">
+                                        <td>{{ p.codigo }}</td>
+                                        <td>{{ p.nombre }}</td>
+                                        <td>{{ p.categoria }}</td>
+                                        <td>S/ {{ p.precio }}</td>
+                                        <td>{{ p.stock }}</td>
+                                        <td>
+                                            <button @click="eliminarProductoAdmin(p.id)" class="btn-eliminar">Eliminar</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab Clientes -->
+                    <div v-if="adminTab === 'clientes'" class="admin-tab-content">
+                        <h2>Gestión de Clientes</h2>
+                        <div class="admin-tabla">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Email</th>
+                                        <th>Teléfono</th>
+                                        <th>Ciudad</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="c in clientes" :key="c.id">
+                                        <td>{{ c.nombre }} {{ c.apellido }}</td>
+                                        <td>{{ c.email }}</td>
+                                        <td>{{ c.telefono }}</td>
+                                        <td>{{ c.ciudad }}</td>
+                                        <td>
+                                            <button @click="eliminarClienteAdmin(c.id)" class="btn-eliminar">Eliminar</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab Ventas -->
+                    <div v-if="adminTab === 'ventas'" class="admin-tab-content">
+                        <h2>Historial de Ventas</h2>
+                        <div class="admin-tabla">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Número</th>
+                                        <th>Cliente</th>
+                                        <th>Total</th>
+                                        <th>Estado</th>
+                                        <th>Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="v in ventas" :key="v.id">
+                                        <td>{{ v.numeroVenta }}</td>
+                                        <td>{{ v.cliente.nombre }}</td>
+                                        <td>S/ {{ v.total }}</td>
+                                        <td>{{ v.estado }}</td>
+                                        <td>{{ formatoFecha(v.fechaVenta) }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app-admin.js"></script>
+</body>
+</html>

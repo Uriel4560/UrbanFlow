@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UrbanFlow - Ropa de Moda </title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles-ecommerce.css">
+    <link rel="stylesheet" href="styles-login.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Pantalla de Login/Registro de Clientes -->
+        <div v-if="!autenticado" class="login-page">
+            <div class="login-wrapper">
+                <!-- Background decorativo -->
+                <div class="login-bg-decoration"></div>
+                
+                <div class="login-container">
+                    <div class="login-box">
+                        <!-- Header mejorado -->
+                        <div class="login-header">
+                            <div class="logo-circle">
+                                <img src="img/logo-urbanflow.png" alt="UrbanFlow" class="login-logo">
+                            </div>
+                            <h1 class="brand-title">UrbanFlow</h1>
+                            <p class="brand-subtitle">Moda Premium Peruana</p>
+                        </div>
+                        
+                        <!-- Tabs de Login/Registro -->
+                        <div class="auth-tabs">
+                            <button 
+                                @click="modoLogin = true; loginError = ''"
+                                :class="['tab-btn', { activo: modoLogin }]"
+                                type="button">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <span>Ingresar</span>
+                            </button>
+                            <button 
+                                @click="modoLogin = false; loginError = ''"
+                                :class="['tab-btn', { activo: !modoLogin }]"
+                                type="button">
+                                <i class="fas fa-user-plus"></i>
+                                <span>Registro</span>
+                            </button>
+                        </div>
+                        
+                        <div class="form-separator"></div>
+                        
+                        <!-- Formulario de Login -->
+                        <form v-if="modoLogin" @submit.prevent="login" class="login-form" :class="{ 'form-exit': !modoLogin }">
+                            <div class="form-group">
+                                <label for="email">
+                                    <i class="fas fa-envelope"></i>
+                                    Email
+                                </label>
+                                <input 
+                                    v-model="credenciales.email" 
+                                    type="email" 
+                                    id="email" 
+                                    placeholder="correo@ejemplo.com"
+                                    required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="contraseña">
+                                    <i class="fas fa-lock"></i>
+                                    Contraseña
+                                </label>
+                                <input 
+                                    v-model="credenciales.contraseña" 
+                                    type="password" 
+                                    id="contraseña" 
+                                    placeholder="••••••••"
+                                    required>
+                            </div>
+                            
+                            <button type="submit" class="btn-login btn-primary" :disabled="cargando">
+                                <i :class="cargando ? 'fas fa-spinner fa-spin' : 'fas fa-sign-in-alt'"></i>
+                                <span>{{ cargando ? 'Verificando...' : 'Ingresar a mi Cuenta' }}</span>
+                            </button>
+                        </form>
+                        
+                        <!-- Formulario de Registro -->
+                        <form v-else @submit.prevent="registro" class="login-form" :class="{ 'form-enter': modoLogin }">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="nombre-reg">
+                                        <i class="fas fa-user"></i>
+                                        Nombre
+                                    </label>
+                                    <input 
+                                        v-model="datosRegistro.nombre" 
+                                        type="text" 
+                                        id="nombre-reg" 
+                                        placeholder="Tu nombre"
+                                        required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email-reg">
+                                    <i class="fas fa-envelope"></i>
+                                    Email
+                                </label>
+                                <input 
+                                    v-model="datosRegistro.email" 
+                                    type="email" 
+                                    id="email-reg" 
+                                    placeholder="tu@email.com"
+                                    required>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="telefono">
+                                        <i class="fas fa-phone"></i>
+                                        Teléfono
+                                    </label>
+                                    <input 
+                                        v-model="datosRegistro.telefono" 
+                                        type="tel" 
+                                        id="telefono" 
+                                        placeholder="987654321"
+                                        required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="ciudad">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        Ciudad
+                                    </label>
+                                    <select 
+                                        v-model="datosRegistro.ciudad" 
+                                        id="ciudad"
+                                        required>
+                                        <option value="">Selecciona ciudad</option>
+                                        <option value="Lima">Lima</option>
+                                        <option value="Arequipa">Arequipa</option>
+                                        <option value="Cusco">Cusco</option>
+                                        <option value="Trujillo">Trujillo</option>
+                                        <option value="Chiclayo">Chiclayo</option>
+                                        <option value="Iquitos">Iquitos</option>
+                                        <option value="Tacna">Tacna</option>
+                                        <option value="Huancayo">Huancayo</option>
+                                        <option value="Ayacucho">Ayacucho</option>
+                                        <option value="Puno">Puno</option>
+                                        <option value="Piura">Piura</option>
+                                        <option value="Cajamarca">Cajamarca</option>
+                                        <option value="Sullana">Sullana</option>
+                                        <option value="Huacho">Huacho</option>
+                                        <option value="Cañete">Cañete</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="contraseña-reg">
+                                    <i class="fas fa-lock"></i>
+                                    Contraseña
+                                </label>
+                                <input 
+                                    v-model="datosRegistro.contraseña" 
+                                    type="password" 
+                                    id="contraseña-reg" 
+                                    placeholder="Mínimo 6 caracteres"
+                                    required>
+                            </div>
+                            
+                            <button type="submit" class="btn-login btn-primary" :disabled="cargando">
+                                <i :class="cargando ? 'fas fa-spinner fa-spin' : 'fas fa-user-plus'"></i>
+                                <span>{{ cargando ? 'Registrando...' : 'Crear Cuenta' }}</span>
+                            </button>
+                        </form>
+                        
+                        <!-- Mensajes de error -->
+                        <div v-if="loginError" class="alert-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <div>
+                                <strong>Error</strong>
+                                <p>{{ loginError }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Panel de información -->
+                    <div class="login-info-panel">
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                            <h3>Tienda Online</h3>
+                            <p>Descubre nuestra colección de moda</p>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <h3>100% Seguro</h3>
+                            <p>Tus datos protegidos con BCrypt</p>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-shipping-fast"></i>
+                            </div>
+                            <h3>Envíos a Perú</h3>
+                            <p>A todas las ciudades principales</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de Tienda (después de login) -->
+        <div v-if="autenticado" class="ecommerce-wrapper">
+            <!-- Notificaciones -->
+            <div v-if="mensaje.tipo" :class="['notificacion', 'notificacion-' + mensaje.tipo]">
+                <i :class="{'fas fa-check-circle': mensaje.tipo === 'exito', 'fas fa-exclamation-circle': mensaje.tipo === 'error', 'fas fa-info-circle': mensaje.tipo === 'info'}"></i>
+                {{ mensaje.texto }}
+            </div>
+        <!-- Header/Navbar -->
+        <header class="header">
+            <div class="container">
+                <div class="logo">
+                    <img src="img/logo-urbanflow.png" alt="UrbanFlow Logo" class="logo-img">
+                    <span class="brand-name">UrbanFlow</span>
+                </div>
+                <nav class="nav">
+                    <a @click="vercion = 'inicio'" :class="{activo: vercion === 'inicio'}">
+                        <i class="fas fa-home"></i> Inicio
+                    </a>
+                    <a @click="vercion = 'catalogo'" :class="{activo: vercion === 'catalogo'}">
+                        <i class="fas fa-shirt"></i> Catálogo
+                    </a>
+                </nav>
+                <div class="header-right">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input v-model="busqueda" type="text" placeholder="Buscar ropa...">
+                    </div>
+                    <div class="user-menu">
+                        <span class="user-name">👤 {{ usuarioActual.nombre }}</span>
+                        <button @click="logout" class="btn-logout">
+                            <i class="fas fa-sign-out-alt"></i> Salir
+                        </button>
+                    </div>
+                    <div class="carrito-icon" @click="vercion = 'carrito'">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span v-if="carrito.length > 0" class="carrito-count">{{ carrito.length }}</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Inicio/Home -->
+        <div v-if="vercion === 'inicio'" class="page-inicio">
+            <!-- Hero Banner -->
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>Moda Premium para Hombres y Mujeres</h1>
+                    <p>Descubre las últimas tendencias en ropa de moda</p>
+                    <button @click="vercion = 'catalogo'" class="btn-hero">Explorar Colección</button>
+                </div>
+            </section>
+
+            <!-- Categorías Destacadas -->
+            <section class="categorias-destacadas">
+                <div class="container">
+                    <h2>Categorías Destacadas</h2>
+                    <div class="categorias-grid">
+                        <div class="categoria-card" @click="filtroCategoria = 'Hombres'; vercion = 'catalogo'">
+                            <div class="categoria-bg hombres"></div>
+                            <h3>👔 Ropa Hombre</h3>
+                            <p>Camisetas, Pantalones, Chaquetas</p>
+                        </div>
+                        <div class="categoria-card" @click="filtroCategoria = 'Mujeres'; vercion = 'catalogo'">
+                            <div class="categoria-bg mujeres"></div>
+                            <h3>👗 Ropa Mujer</h3>
+                            <p>Vestidos, Blusas, Faldas</p>
+                        </div>
+                        <div class="categoria-card" @click="filtroCategoria = ''; vercion = 'catalogo'">
+                            <div class="categoria-bg ofertas"></div>
+                            <h3>🎁 Ofertas</h3>
+                            <p>Descuentos Especiales</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Productos Destacados -->
+            <section class="productos-destacados">
+                <div class="container">
+                    <h2>Productos Destacados</h2>
+                    <div class="productos-grid">
+                        <div v-for="producto in productos.slice(0, 4)" :key="producto.id" class="producto-card">
+                            <div class="producto-imagen">
+                                <div class="img-placeholder">{{ producto.nombre.charAt(0) }}</div>
+                                <span class="descuento">-20%</span>
+                            </div>
+                            <div class="producto-info">
+                                <h3>{{ producto.nombre }}</h3>
+                                <p class="categoria">{{ producto.categoria }}</p>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i> 4.5 (128 reseñas)
+                                </div>
+                                <div class="precio">
+                                    <span class="precio-original">S/ {{ (producto.precio * 1.2).toFixed(2) }}</span>
+                                    <span class="precio-actual">S/ {{ producto.precio }}</span>
+                                </div>
+                                <button @click="agregarAlCarrito(producto)" class="btn-comprar">
+                                    <i class="fas fa-shopping-cart"></i> Agregar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Características -->
+            <section class="caracteristicas">
+                <div class="container">
+                    <div class="caracteristicas-grid">
+                        <div class="caracteristica-item">
+                            <i class="fas fa-truck"></i>
+                            <h3>Envío Gratis</h3>
+                            <p>En pedidos mayores a $50</p>
+                        </div>
+                        <div class="caracteristica-item">
+                            <i class="fas fa-undo"></i>
+                            <h3>Devoluciones Fáciles</h3>
+                            <p>Hasta 30 días sin preguntas</p>
+                        </div>
+                        <div class="caracteristica-item">
+                            <i class="fas fa-lock"></i>
+                            <h3>Compra Segura</h3>
+                            <p>Pago 100% protegido</p>
+                        </div>
+                        <div class="caracteristica-item">
+                            <i class="fas fa-headset"></i>
+                            <h3>Soporte 24/7</h3>
+                            <p>Ayuda cuando la necesites</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Catálogo -->
+        <div v-if="vercion === 'catalogo'" class="page-catalogo">
+            <div class="container">
+                <div class="catalogo-layout">
+                    <!-- Sidebar Filtros -->
+                    <aside class="filtros-sidebar">
+                        <h3>Filtros</h3>
+                        
+                        <div class="filtro-grupo">
+                            <h4>Género</h4>
+                            <label><input type="radio" v-model="filtroCategoria" value="" @change="aplicarFiltros"> Todos</label>
+                            <label><input type="radio" v-model="filtroCategoria" value="Hombres" @change="aplicarFiltros"> Hombres</label>
+                            <label><input type="radio" v-model="filtroCategoria" value="Mujeres" @change="aplicarFiltros"> Mujeres</label>
+                        </div>
+
+                        <div class="filtro-grupo">
+                            <h4>Rango de Precio</h4>
+                            <input type="range" v-model="filtroPrecioMax" min="0" max="500" @input="aplicarFiltros" class="slider">
+                            <p>Hasta ${{ filtroPrecioMax }}</p>
+                        </div>
+
+                        <div class="filtro-grupo">
+                            <h4>Talla</h4>
+                            <label><input type="checkbox" v-model="filtroTallas" value="XS" @change="aplicarFiltros"> XS</label>
+                            <label><input type="checkbox" v-model="filtroTallas" value="S" @change="aplicarFiltros"> S</label>
+                            <label><input type="checkbox" v-model="filtroTallas" value="M" @change="aplicarFiltros"> M</label>
+                            <label><input type="checkbox" v-model="filtroTallas" value="L" @change="aplicarFiltros"> L</label>
+                            <label><input type="checkbox" v-model="filtroTallas" value="XL" @change="aplicarFiltros"> XL</label>
+                            <label><input type="checkbox" v-model="filtroTallas" value="XXL" @change="aplicarFiltros"> XXL</label>
+                        </div>
+
+                        <button @click="limpiarFiltros" class="btn-limpiar">Limpiar Filtros</button>
+                    </aside>
+
+                    <!-- Contenido Principal -->
+                    <main class="catalogo-main">
+                        <div class="catalogo-header">
+                            <h2>{{ filtroCategoria ? filtroCategoria : 'Todos' }} los Productos</h2>
+                            <div class="ordenar">
+                                <label>Ordenar por:</label>
+                                <select v-model="ordenar" @change="aplicarFiltros">
+                                    <option value="nuevo">Más Nuevo</option>
+                                    <option value="precio-asc">Precio: Menor a Mayor</option>
+                                    <option value="precio-desc">Precio: Mayor a Menor</option>
+                                    <option value="nombre">Nombre A-Z</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="productos-catalogo">
+                            <div v-for="producto in productosFiltrados" :key="producto.id" class="producto-card-catalogo">
+                                <div class="producto-imagen-catalogo">
+                                    <div class="img-placeholder">{{ producto.nombre.charAt(0) }}</div>
+                                    <div class="overlay-acciones">
+                                        <button @click="verDetalle(producto)" class="btn-detalle">
+                                            <i class="fas fa-eye"></i> Ver Detalle
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="producto-info-catalogo">
+                                    <h3>{{ producto.nombre }}</h3>
+                                    <p class="marca">{{ producto.marca }}</p>
+                                    <div class="rating-catalogo">
+                                        <i class="fas fa-star"></i> 4.5 ({{ Math.floor(Math.random() * 100) + 50 }} reseñas)
+                                    </div>
+                                    <div class="tallas-disponibles">
+                                        <span v-for="talla in ['XS', 'S', 'M', 'L', 'XL']" :key="talla" class="talla">{{ talla }}</span>
+                                    </div>
+                                    <div class="precio-catalogo">
+                                        <span class="precio-actual">S/ {{ producto.precio }}</span>
+                                    </div>
+                                    <button @click="agregarAlCarrito(producto)" class="btn-comprar-catalogo">
+                                        <i class="fas fa-shopping-cart"></i> Agregar al Carrito
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-if="productosFiltrados.length === 0" class="sin-resultados">
+                            <i class="fas fa-search"></i>
+                            <p>No encontramos productos que coincidan con tus filtros</p>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carrito -->
+        <div v-if="vercion === 'carrito'" class="page-carrito">
+            <div class="container">
+                <h2>Carrito de Compras</h2>
+                
+                <div v-if="carrito.length > 0" class="carrito-content">
+                    <div class="carrito-items">
+                        <div v-for="(item, index) in carrito" :key="index" class="carrito-item">
+                            <div class="item-imagen">
+                                <div class="img-placeholder">{{ item.nombre.charAt(0) }}</div>
+                            </div>
+                            <div class="item-info">
+                                <h3>{{ item.nombre }}</h3>
+                                <p class="item-marca">{{ item.marca }}</p>
+                                <div class="item-cantidad">
+                                    <button @click="disminuirCantidad(index)">-</button>
+                                    <input v-model.number="item.cantidad" type="number" min="1">
+                                    <button @click="aumentarCantidad(index)">+</button>
+                                </div>
+                            </div>
+                            <div class="item-precio">
+                                <p>S/ {{ (item.precio * item.cantidad).toFixed(2) }}</p>
+                                <button @click="eliminarDelCarrito(index)" class="btn-eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="carrito-resumen">
+                        <h3>Resumen de Compra</h3>
+                        <div class="resumen-item">
+                            <span>Subtotal:</span>
+                            <span>S/ {{ subtotal.toFixed(2) }}</span>
+                        </div>
+                        <div class="resumen-item">
+                            <span>Envío:</span>
+                            <span>S/ {{ costoEnvio.toFixed(2) }}</span>
+                        </div>
+                        <div class="resumen-item">
+                            <span>IGV:</span>
+                            <span>S/ {{ impuesto.toFixed(2) }}</span>
+                        </div>
+                        <div class="resumen-total">
+                            <span>Total:</span>
+                            <span>S/ {{ total.toFixed(2) }}</span>
+                        </div>
+                        <button @click="completarCompra" class="btn-comprar-final">
+                            <i class="fas fa-credit-card"></i> Proceder al Pago
+                        </button>
+                        <button @click="vercion = 'catalogo'" class="btn-seguir-comprando">
+                            Seguir Comprando
+                        </button>
+                    </div>
+                </div>
+
+                <div v-else class="carrito-vacio">
+                    <i class="fas fa-shopping-cart"></i>
+                    <p>Tu carrito está vacío</p>
+                    <button @click="vercion = 'catalogo'" class="btn-volver">
+                        Ir al Catálogo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin -->
+        <div v-if="vercion === 'admin'" class="page-admin">
+            <div class="container">
+                <div class="admin-tabs">
+                    <button @click="adminTab = 'productos'" :class="{activo: adminTab === 'productos'}" class="tab-btn">
+                        <i class="fas fa-shirt"></i> Productos
+                    </button>
+                    <button @click="adminTab = 'clientes'" :class="{activo: adminTab === 'clientes'}" class="tab-btn">
+                        <i class="fas fa-users"></i> Clientes
+                    </button>
+                    <button @click="adminTab = 'ventas'" :class="{activo: adminTab === 'ventas'}" class="tab-btn">
+                        <i class="fas fa-receipt"></i> Ventas
+                    </button>
+                </div>
+
+                <!-- Tab Productos -->
+                <div v-if="adminTab === 'productos'" class="admin-tab-content">
+                    <h2>Gestión de Productos</h2>
+                    <div class="admin-form">
+                        <input v-model="nuevoProducto.codigo" placeholder="Código">
+                        <input v-model="nuevoProducto.nombre" placeholder="Nombre">
+                        <input v-model="nuevoProducto.categoria" placeholder="Categoría (Hombres/Mujeres)">
+                        <input v-model.number="nuevoProducto.precio" type="number" placeholder="Precio" step="0.01">
+                        <input v-model.number="nuevoProducto.stock" type="number" placeholder="Stock">
+                        <input v-model="nuevoProducto.talla" placeholder="Talla">
+                        <input v-model="nuevoProducto.color" placeholder="Color">
+                        <button @click="agregarProductoAdmin" class="btn-admin-agregar">Agregar Producto</button>
+                    </div>
+
+                    <div class="admin-tabla">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Nombre</th>
+                                    <th>Categoría</th>
+                                    <th>Precio</th>
+                                    <th>Stock</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="p in productos" :key="p.id">
+                                    <td>{{ p.codigo }}</td>
+                                    <td>{{ p.nombre }}</td>
+                                    <td>{{ p.categoria }}</td>
+                                    <td>S/ {{ p.precio }}</td>
+                                    <td>{{ p.stock }}</td>
+                                    <td>
+                                        <button @click="eliminarProductoAdmin(p.id)" class="btn-eliminar">Eliminar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab Clientes -->
+                <div v-if="adminTab === 'clientes'" class="admin-tab-content">
+                    <h2>Gestión de Clientes</h2>
+                    <div class="admin-tabla">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Email</th>
+                                    <th>Teléfono</th>
+                                    <th>Ciudad</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="c in clientes" :key="c.id">
+                                    <td>{{ c.nombre }} {{ c.apellido }}</td>
+                                    <td>{{ c.email }}</td>
+                                    <td>{{ c.telefono }}</td>
+                                    <td>{{ c.ciudad }}</td>
+                                    <td>
+                                        <button @click="eliminarClienteAdmin(c.id)" class="btn-eliminar">Eliminar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab Ventas -->
+                <div v-if="adminTab === 'ventas'" class="admin-tab-content">
+                    <h2>Historial de Ventas</h2>
+                    <div class="admin-tabla">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Cliente</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="v in ventas" :key="v.id">
+                                    <td>{{ v.numeroVenta }}</td>
+                                    <td>{{ v.cliente.nombre }}</td>
+                                    <td>S/ {{ v.total }}</td>
+                                    <td>{{ v.estado }}</td>
+                                    <td>{{ formatoFecha(v.fechaVenta) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app-ecommerce.js"></script>
+</body>
+</html>
