@@ -133,9 +133,7 @@ INSERT INTO detalles_venta (venta_id, producto_id, cantidad, precio_unitario, su
 -- Fin del script de UrbanFlow
 -- ============================================
 SELECT * FROM productos;
-<<<<<<< HEAD
 SELECT * FROM clientes;
 =======
 SELECT * FROM clientes;
 SELECT * FROM ventas;
->>>>>>> 965fe45 (feat: actualizar bd parte 2)
