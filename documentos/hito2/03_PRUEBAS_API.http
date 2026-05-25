@@ -1,0 +1,15 @@
+### Productos
+GET http://localhost:8080/api/productos
+
+POST http://localhost:8080/api/productos
+Content-Type: application/json
+
+{
+  "codigo": "URB007",
+  "nombre": "Chaqueta Jeans",
+  "precio": 210.00,
+  "stock": 25
+}
+
+### Pedidos
+GET http://localhost:8080/api/pedidos
