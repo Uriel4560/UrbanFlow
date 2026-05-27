@@ -16,46 +16,77 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ventas.ropa.sistema.modelo.DetalleVenta;
 import com.ventas.ropa.sistema.servicio.DetalleVentaServicio;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping("/api/detalles-venta")
+@Tag(name = "Detalles de Venta", description = "Gestión de detalles de ventas")
 public class DetalleVentaControlador {
-    
+
     @Autowired
     private DetalleVentaServicio detalleVentaServicio;
-    
+
     @GetMapping
+    @Operation(summary = "Obtener todos los detalles de venta", description = "Retorna la lista de todos los detalles de ventas")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista obtenida exitosamente")
+    })
     public List<DetalleVenta> obtenerTodos() {
         return detalleVentaServicio.obtenerTodos();
     }
-    
+
     @GetMapping("/{id}")
+    @Operation(summary = "Obtener detalle de venta por ID", description = "Retorna un detalle de venta específico")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Detalle encontrado"),
+            @ApiResponse(responseCode = "404", description = "Detalle no encontrado")
+    })
     public ResponseEntity<DetalleVenta> obtenerPorId(@PathVariable Long id) {
         return detalleVentaServicio.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-    
+
     @PostMapping
+    @Operation(summary = "Crear detalle de venta", description = "Crea un nuevo detalle de venta")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Detalle creado exitosamente")
+    })
     public DetalleVenta crear(@RequestBody DetalleVenta detalleVenta) {
         return detalleVentaServicio.guardar(detalleVenta);
     }
-    
+
     @PutMapping("/{id}")
-    public ResponseEntity<DetalleVenta> actualizar(@PathVariable Long id, @RequestBody DetalleVenta detalleVentaActualizado) {
+    @Operation(summary = "Actualizar detalle de venta", description = "Actualiza un detalle de venta existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Detalle actualizado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Detalle no encontrado")
+    })
+    public ResponseEntity<DetalleVenta> actualizar(@PathVariable Long id,
+            @RequestBody DetalleVenta detalleVentaActualizado) {
         return detalleVentaServicio.obtenerPorId(id)
                 .map(detalleVenta -> {
                     detalleVenta.setVenta(detalleVentaActualizado.getVenta());
                     detalleVenta.setProducto(detalleVentaActualizado.getProducto());
                     detalleVenta.setCantidad(detalleVentaActualizado.getCantidad());
                     detalleVenta.setPrecioUnitario(detalleVentaActualizado.getPrecioUnitario());
-                    detalleVenta.setSubtotal(detalleVentaActualizado.getCantidad() * detalleVentaActualizado.getPrecioUnitario());
+                    detalleVenta.setSubtotal(
+                            detalleVentaActualizado.getCantidad() * detalleVentaActualizado.getPrecioUnitario());
                     DetalleVenta actualizado = detalleVentaServicio.guardar(detalleVenta);
                     return ResponseEntity.ok(actualizado);
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
-    
+
     @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar detalle de venta", description = "Elimina un detalle de venta del sistema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Detalle eliminado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Detalle no encontrado")
+    })
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         if (detalleVentaServicio.obtenerPorId(id).isPresent()) {
             detalleVentaServicio.eliminar(id);
