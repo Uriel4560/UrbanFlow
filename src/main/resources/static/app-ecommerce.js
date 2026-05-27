@@ -10,6 +10,9 @@ createApp({
       adminTab: 'productos',
       busqueda: '',
       filtroCategoria: '',
+      filtroPrecioMax: 500,
+      filtroTallas: [],
+      ordenar: 'nuevo',
       carrito: [],
       
       productos: [],
@@ -35,13 +38,33 @@ createApp({
 
   computed: {
     productosFiltrados() {
-      return this.productos.filter(p => {
+      const productos = this.productos.filter(p => {
         const cumpleCategoria = !this.filtroCategoria || p.categoria === this.filtroCategoria;
-        const cumpleBusqueda = !this.busqueda || 
-          p.nombre.toLowerCase().includes(this.busqueda.toLowerCase()) ||
-          p.categoria.toLowerCase().includes(this.busqueda.toLowerCase());
-        return cumpleCategoria && cumpleBusqueda;
+        const textoBusqueda = String(this.busqueda || '').trim().toUpperCase();
+        const tallaProducto = String(p.talla || '').trim().toUpperCase();
+        const cumpleBusqueda = !textoBusqueda ||
+          String(p.nombre || '').toUpperCase().includes(textoBusqueda) ||
+          String(p.categoria || '').toUpperCase().includes(textoBusqueda) ||
+          tallaProducto.includes(textoBusqueda);
+        const precioMax = Number(this.filtroPrecioMax) || 500;
+        const cumplePrecio = Number(p.precio || 0) <= precioMax;
+        const tallasSeleccionadas = (this.filtroTallas || []).map(talla => String(talla || '').trim().toUpperCase());
+        const cumpleTalla = tallasSeleccionadas.length === 0 || tallasSeleccionadas.includes(tallaProducto);
+
+        return cumpleCategoria && cumpleBusqueda && cumplePrecio && cumpleTalla;
       });
+
+      const productosOrdenados = productos.slice();
+
+      if (this.ordenar === 'precio-asc') {
+        productosOrdenados.sort((a, b) => Number(a.precio || 0) - Number(b.precio || 0));
+      } else if (this.ordenar === 'precio-desc') {
+        productosOrdenados.sort((a, b) => Number(b.precio || 0) - Number(a.precio || 0));
+      } else if (this.ordenar === 'nombre') {
+        productosOrdenados.sort((a, b) => String(a.nombre || '').localeCompare(String(b.nombre || '')));
+      }
+
+      return productosOrdenados;
     },
 
     subtotal() {
@@ -61,6 +84,14 @@ createApp({
       setTimeout(() => {
         this.mensaje = { tipo: '', texto: '' };
       }, 3000);
+    },
+
+    limpiarFiltros() {
+      this.filtroCategoria = '';
+      this.filtroPrecioMax = 500;
+      this.filtroTallas = [];
+      this.ordenar = 'nuevo';
+      this.busqueda = '';
     },
 
     // Funciones del carrito
@@ -287,6 +318,26 @@ createApp({
     this.cargarClientes();
     this.cargarVentas();
     this.cargarCarrito();
+
+    this.onProductosSync = () => {
+      this.cargarProductos();
+    };
+
+    window.addEventListener('storage', this.onProductosSync);
+
+    this.productosRefreshTimer = setInterval(() => {
+      this.cargarProductos();
+    }, 10000);
+  },
+
+  beforeUnmount() {
+    if (this.productosRefreshTimer) {
+      clearInterval(this.productosRefreshTimer);
+    }
+
+    if (this.onProductosSync) {
+      window.removeEventListener('storage', this.onProductosSync);
+    }
   }
 
 }).mount('#app');

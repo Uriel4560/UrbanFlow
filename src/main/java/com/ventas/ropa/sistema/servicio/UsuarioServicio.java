@@ -36,11 +36,29 @@ public class UsuarioServicio {
     public boolean validarCredenciales(String usuario, String contraseña) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByUsuario(usuario);
         
-        if (usuarioOpt.isPresent()) {
-            Usuario u = usuarioOpt.get();
-            return u.isActivo() && passwordEncoder.matches(contraseña, u.getContraseña());
+        if (usuarioOpt.isEmpty()) {
+            return false;
         }
-        
+
+        Usuario u = usuarioOpt.get();
+        String almacenada = u.getContraseña();
+
+        if (!u.isActivo() || almacenada == null || almacenada.isBlank()) {
+            return false;
+        }
+
+        boolean valida = passwordEncoder.matches(contraseña, almacenada);
+
+        if (valida) {
+            return true;
+        }
+
+        if (almacenada.equals(contraseña)) {
+            u.setContraseña(passwordEncoder.encode(contraseña));
+            usuarioRepository.save(u);
+            return true;
+        }
+
         return false;
     }
     

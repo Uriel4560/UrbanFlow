@@ -39,7 +39,7 @@
 .login-box {
     background: white;
     border-radius: 20px;
-    padding: 50px 40px;
+    padding: 74px 54px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     animation: slideInLeft 0.6s ease-out;
 }
@@ -68,7 +68,7 @@
 
 .login-header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 46px;
 }
 
 .logo-circle {
@@ -111,7 +111,7 @@
 .auth-tabs {
     display: flex;
     gap: 10px;
-    margin-bottom: 30px;
+    margin-bottom: 36px;
     background: #f5f7fa;
     padding: 8px;
     border-radius: 12px;
@@ -152,11 +152,14 @@
 .form-separator {
     height: 1px;
     background: #e5e5e5;
-    margin-bottom: 30px;
+    margin-bottom: 36px;
 }
 
 /* Formulario */
 .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
     animation: fadeIn 0.4s ease-in;
 }
 
@@ -168,11 +171,11 @@
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 40px;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 0;
 }
 
 .form-group label {
@@ -182,7 +185,7 @@
     font-size: 14px;
     font-weight: 600;
     color: #333;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
 }
 
 .form-group label i {
@@ -193,13 +196,16 @@
 .form-group input,
 .form-group select {
     width: 100%;
-    padding: 14px 16px;
+    min-height: 68px;
+    padding: 22px 24px;
     border: 2px solid #e0e0e0;
-    border-radius: 10px;
+    border-radius: 14px;
     font-size: 15px;
+    line-height: 1.5;
     font-family: inherit;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     background: #fafbfc;
+    box-sizing: border-box;
 }
 
 .form-group input::placeholder {
@@ -240,7 +246,7 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    margin-top: 10px;
+    margin-top: 6px;
 }
 
 .btn-login:hover:not(:disabled) {

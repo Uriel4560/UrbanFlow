@@ -825,11 +825,11 @@ html, body {
 
 .carrito-item {
     display: grid;
-    grid-template-columns: 100px 1fr 120px;
-    gap: 20px;
-    padding: 20px;
+    grid-template-columns: 110px minmax(0, 1fr) 150px;
+    gap: 24px;
+    padding: 24px;
     border-bottom: 1px solid var(--color-border);
-    align-items: center;
+    align-items: start;
 }
 
 .carrito-item:last-child {
@@ -837,51 +837,59 @@ html, body {
 }
 
 .item-imagen {
-    width: 100px;
-    height: 100px;
+    width: 110px;
+    height: 110px;
     background: var(--color-gray);
-    border-radius: 8px;
+    border-radius: 10px;
 }
 
 .item-imagen .img-placeholder {
     width: 100%;
     height: 100%;
-    font-size: 40px;
+    font-size: 42px;
+}
+
+.item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .item-info h3 {
-    font-size: 16px;
+    font-size: 17px;
+    line-height: 1.4;
     font-weight: 600;
-    margin-bottom: 6px;
+    margin-bottom: 0;
 }
 
 .item-marca {
     color: #999;
-    font-size: 12px;
-    margin-bottom: 12px;
+    font-size: 13px;
+    margin-bottom: 0;
 }
 
 .item-cantidad {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     background: var(--color-gray);
-    border-radius: 6px;
+    border-radius: 8px;
     width: fit-content;
-    padding: 6px;
+    padding: 8px 10px;
 }
 
 .item-cantidad button {
     background: none;
     border: none;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 700;
     transition: all 0.3s ease;
+    font-size: 16px;
 }
 
 .item-cantidad button:hover {
@@ -889,21 +897,26 @@ html, body {
 }
 
 .item-cantidad input {
-    width: 40px;
+    width: 44px;
     border: none;
     background: transparent;
     text-align: center;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 15px;
 }
 
 .item-precio {
     text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
 }
 
 .item-precio p {
     font-size: 18px;
     font-weight: 700;
-    margin-bottom: 10px;
+    margin-bottom: 0;
 }
 
 .btn-eliminar {
@@ -911,9 +924,9 @@ html, body {
     border: none;
     color: var(--color-accent);
     cursor: pointer;
-    font-size: 14px;
+    font-size: 15px;
     transition: all 0.3s ease;
-    padding: 6px 12px;
+    padding: 8px 12px;
 }
 
 .btn-eliminar:hover {
@@ -922,7 +935,7 @@ html, body {
 
 .carrito-resumen {
     background: var(--color-secondary);
-    padding: 20px;
+    padding: 24px;
     border-radius: 12px;
     box-shadow: var(--shadow);
     height: fit-content;
@@ -933,8 +946,8 @@ html, body {
 .carrito-resumen h3 {
     font-size: 18px;
     font-weight: 600;
-    margin-bottom: 20px;
-    padding-bottom: 16px;
+    margin-bottom: 22px;
+    padding-bottom: 18px;
     border-bottom: 2px solid var(--color-accent);
 }
 
@@ -942,7 +955,7 @@ html, body {
     display: flex;
     justify-content: space-between;
     font-size: 14px;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     color: #666;
 }
 
@@ -951,9 +964,9 @@ html, body {
     justify-content: space-between;
     font-size: 18px;
     font-weight: 700;
-    padding-top: 16px;
+    padding-top: 18px;
     border-top: 1px solid var(--color-border);
-    margin-top: 16px;
+    margin-top: 18px;
 }
 
 .btn-comprar-final {
@@ -969,7 +982,7 @@ html, body {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    margin-top: 16px;
+    margin-top: 18px;
     transition: all 0.3s ease;
 }
 
@@ -1274,14 +1287,28 @@ html, body {
 }
 
     .carrito-item {
-        grid-template-columns: 80px 1fr;
-        gap: 12px;
+        grid-template-columns: 90px minmax(0, 1fr);
+        gap: 16px;
+        padding: 18px;
+        align-items: start;
     }
 
     .item-precio {
         grid-column: 1 / -1;
         display: flex;
         justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid var(--color-border);
+    }
+
+    .item-info {
+        gap: 12px;
+    }
+
+    .item-cantidad {
+        padding: 8px 10px;
     }
 
     .admin-form {
