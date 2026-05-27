@@ -17,26 +17,47 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ventas.ropa.sistema.modelo.Producto;
 import com.ventas.ropa.sistema.servicio.ProductoServicio;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping("/api/productos")
+@Tag(name = "Productos", description = "Gestión de productos del catálogo")
 public class ProductoControlador {
-    
+
     @Autowired
     private ProductoServicio productoServicio;
-    
+
     @GetMapping
+    @Operation(summary = "Obtener todos los productos", description = "Retorna la lista completa de productos disponibles")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de productos obtenida exitosamente")
+    })
     public List<Producto> obtenerTodos() {
         return productoServicio.obtenerTodos();
     }
-    
+
     @GetMapping("/{id}")
+    @Operation(summary = "Obtener producto por ID", description = "Retorna un producto específico según su ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Producto encontrado"),
+            @ApiResponse(responseCode = "404", description = "Producto no encontrado")
+    })
     public ResponseEntity<Producto> obtenerPorId(@PathVariable Long id) {
         return productoServicio.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-    
+
     @PostMapping
+    @Operation(summary = "Crear nuevo producto", description = "Crea un nuevo producto en el sistema con validación de campos")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Producto creado exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Campos inválidos o incompletos"),
+            @ApiResponse(responseCode = "409", description = "Conflicto - El código del producto ya existe")
+    })
     public ResponseEntity<?> crear(@RequestBody Producto producto) {
         try {
             // Validar campos requeridos
@@ -61,15 +82,20 @@ public class ProductoControlador {
             if (producto.getStock() == null || producto.getStock() < 0) {
                 return ResponseEntity.badRequest().body("El stock no puede ser negativo");
             }
-            
+
             Producto nuevoProducto = productoServicio.guardar(producto);
             return ResponseEntity.ok(nuevoProducto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: " + e.getMessage());
         }
     }
-    
+
     @PutMapping("/{id}")
+    @Operation(summary = "Actualizar producto", description = "Actualiza los datos de un producto existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Producto actualizado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Producto no encontrado")
+    })
     public ResponseEntity<Producto> actualizar(@PathVariable Long id, @RequestBody Producto productoActualizado) {
         return productoServicio.obtenerPorId(id)
                 .map(producto -> {
@@ -84,8 +110,13 @@ public class ProductoControlador {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
-    
+
     @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar producto", description = "Elimina un producto del sistema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Producto eliminado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Producto no encontrado")
+    })
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         if (productoServicio.obtenerPorId(id).isPresent()) {
             productoServicio.eliminar(id);
