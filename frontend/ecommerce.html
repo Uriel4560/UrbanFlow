@@ -239,7 +239,7 @@
                 <div class="header-right">
                     <div class="search-bar">
                         <i class="fas fa-search"></i>
-                        <input v-model="busqueda" type="text" placeholder="Buscar ropa...">
+                        <input v-model="busqueda" type="text" placeholder="Buscar producto o talla (S, M, L, XL)">
                     </div>
                     <div class="user-menu">
                         <span class="user-name">👤 {{ usuarioActual.nombre }}</span>
@@ -326,7 +326,7 @@
                         <div class="caracteristica-item">
                             <i class="fas fa-truck"></i>
                             <h3>Envío Gratis</h3>
-                            <p>En pedidos mayores a $50</p>
+                            <p>En pedidos mayores a S/ 50</p>
                         </div>
                         <div class="caracteristica-item">
                             <i class="fas fa-undo"></i>
@@ -358,25 +358,25 @@
                         
                         <div class="filtro-grupo">
                             <h4>Género</h4>
-                            <label><input type="radio" v-model="filtroCategoria" value="" @change="aplicarFiltros"> Todos</label>
-                            <label><input type="radio" v-model="filtroCategoria" value="Hombres" @change="aplicarFiltros"> Hombres</label>
-                            <label><input type="radio" v-model="filtroCategoria" value="Mujeres" @change="aplicarFiltros"> Mujeres</label>
+                            <label><input type="radio" v-model="filtroCategoria" value=""> Todos</label>
+                            <label><input type="radio" v-model="filtroCategoria" value="Hombres"> Hombres</label>
+                            <label><input type="radio" v-model="filtroCategoria" value="Mujeres"> Mujeres</label>
                         </div>
 
                         <div class="filtro-grupo">
                             <h4>Rango de Precio</h4>
-                            <input type="range" v-model="filtroPrecioMax" min="0" max="500" @input="aplicarFiltros" class="slider">
-                            <p>Hasta ${{ filtroPrecioMax }}</p>
+                            <input type="range" v-model.number="filtroPrecioMax" min="0" max="500" class="slider">
+                            <p>Hasta S/ {{ filtroPrecioMax }}</p>
                         </div>
 
                         <div class="filtro-grupo">
                             <h4>Talla</h4>
-                            <label><input type="checkbox" v-model="filtroTallas" value="XS" @change="aplicarFiltros"> XS</label>
-                            <label><input type="checkbox" v-model="filtroTallas" value="S" @change="aplicarFiltros"> S</label>
-                            <label><input type="checkbox" v-model="filtroTallas" value="M" @change="aplicarFiltros"> M</label>
-                            <label><input type="checkbox" v-model="filtroTallas" value="L" @change="aplicarFiltros"> L</label>
-                            <label><input type="checkbox" v-model="filtroTallas" value="XL" @change="aplicarFiltros"> XL</label>
-                            <label><input type="checkbox" v-model="filtroTallas" value="XXL" @change="aplicarFiltros"> XXL</label>
+                            <label><input type="checkbox" v-model="filtroTallas" value="XS"> XS</label>
+                            <label><input type="checkbox" v-model="filtroTallas" value="S"> S</label>
+                            <label><input type="checkbox" v-model="filtroTallas" value="M"> M</label>
+                            <label><input type="checkbox" v-model="filtroTallas" value="L"> L</label>
+                            <label><input type="checkbox" v-model="filtroTallas" value="XL"> XL</label>
+                            <label><input type="checkbox" v-model="filtroTallas" value="XXL"> XXL</label>
                         </div>
 
                         <button @click="limpiarFiltros" class="btn-limpiar">Limpiar Filtros</button>
@@ -388,7 +388,7 @@
                             <h2>{{ filtroCategoria ? filtroCategoria : 'Todos' }} los Productos</h2>
                             <div class="ordenar">
                                 <label>Ordenar por:</label>
-                                <select v-model="ordenar" @change="aplicarFiltros">
+                                <select v-model="ordenar">
                                     <option value="nuevo">Más Nuevo</option>
                                     <option value="precio-asc">Precio: Menor a Mayor</option>
                                     <option value="precio-desc">Precio: Mayor a Menor</option>
@@ -411,10 +411,10 @@
                                     <h3>{{ producto.nombre }}</h3>
                                     <p class="marca">{{ producto.marca }}</p>
                                     <div class="rating-catalogo">
-                                        <i class="fas fa-star"></i> 4.5 ({{ Math.floor(Math.random() * 100) + 50 }} reseñas)
+                                        <i class="fas fa-star"></i> 4.5 (120 reseñas)
                                     </div>
                                     <div class="tallas-disponibles">
-                                        <span v-for="talla in ['XS', 'S', 'M', 'L', 'XL']" :key="talla" class="talla">{{ talla }}</span>
+                                        <span class="talla">{{ producto.talla }}</span>
                                     </div>
                                     <div class="precio-catalogo">
                                         <span class="precio-actual">S/ {{ producto.precio }}</span>
@@ -501,120 +501,6 @@
             </div>
         </div>
 
-        <!-- Admin -->
-        <div v-if="vercion === 'admin'" class="page-admin">
-            <div class="container">
-                <div class="admin-tabs">
-                    <button @click="adminTab = 'productos'" :class="{activo: adminTab === 'productos'}" class="tab-btn">
-                        <i class="fas fa-shirt"></i> Productos
-                    </button>
-                    <button @click="adminTab = 'clientes'" :class="{activo: adminTab === 'clientes'}" class="tab-btn">
-                        <i class="fas fa-users"></i> Clientes
-                    </button>
-                    <button @click="adminTab = 'ventas'" :class="{activo: adminTab === 'ventas'}" class="tab-btn">
-                        <i class="fas fa-receipt"></i> Ventas
-                    </button>
-                </div>
-
-                <!-- Tab Productos -->
-                <div v-if="adminTab === 'productos'" class="admin-tab-content">
-                    <h2>Gestión de Productos</h2>
-                    <div class="admin-form">
-                        <input v-model="nuevoProducto.codigo" placeholder="Código">
-                        <input v-model="nuevoProducto.nombre" placeholder="Nombre">
-                        <input v-model="nuevoProducto.categoria" placeholder="Categoría (Hombres/Mujeres)">
-                        <input v-model.number="nuevoProducto.precio" type="number" placeholder="Precio" step="0.01">
-                        <input v-model.number="nuevoProducto.stock" type="number" placeholder="Stock">
-                        <input v-model="nuevoProducto.talla" placeholder="Talla">
-                        <input v-model="nuevoProducto.color" placeholder="Color">
-                        <button @click="agregarProductoAdmin" class="btn-admin-agregar">Agregar Producto</button>
-                    </div>
-
-                    <div class="admin-tabla">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Código</th>
-                                    <th>Nombre</th>
-                                    <th>Categoría</th>
-                                    <th>Precio</th>
-                                    <th>Stock</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="p in productos" :key="p.id">
-                                    <td>{{ p.codigo }}</td>
-                                    <td>{{ p.nombre }}</td>
-                                    <td>{{ p.categoria }}</td>
-                                    <td>S/ {{ p.precio }}</td>
-                                    <td>{{ p.stock }}</td>
-                                    <td>
-                                        <button @click="eliminarProductoAdmin(p.id)" class="btn-eliminar">Eliminar</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Tab Clientes -->
-                <div v-if="adminTab === 'clientes'" class="admin-tab-content">
-                    <h2>Gestión de Clientes</h2>
-                    <div class="admin-tabla">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Email</th>
-                                    <th>Teléfono</th>
-                                    <th>Ciudad</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="c in clientes" :key="c.id">
-                                    <td>{{ c.nombre }} {{ c.apellido }}</td>
-                                    <td>{{ c.email }}</td>
-                                    <td>{{ c.telefono }}</td>
-                                    <td>{{ c.ciudad }}</td>
-                                    <td>
-                                        <button @click="eliminarClienteAdmin(c.id)" class="btn-eliminar">Eliminar</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Tab Ventas -->
-                <div v-if="adminTab === 'ventas'" class="admin-tab-content">
-                    <h2>Historial de Ventas</h2>
-                    <div class="admin-tabla">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Número</th>
-                                    <th>Cliente</th>
-                                    <th>Total</th>
-                                    <th>Estado</th>
-                                    <th>Fecha</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="v in ventas" :key="v.id">
-                                    <td>{{ v.numeroVenta }}</td>
-                                    <td>{{ v.cliente.nombre }}</td>
-                                    <td>S/ {{ v.total }}</td>
-                                    <td>{{ v.estado }}</td>
-                                    <td>{{ formatoFecha(v.fechaVenta) }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script src="app-ecommerce.js"></script>

@@ -28,6 +28,9 @@ createApp({
       adminTab: 'productos',
       busqueda: '',
       filtroCategoria: '',
+      filtroPrecioMax: 500,
+      filtroTallas: [],
+      ordenar: 'nuevo',
       carrito: [],
       
       productos: [],
@@ -53,13 +56,33 @@ createApp({
 
   computed: {
     productosFiltrados() {
-      return this.productos.filter(p => {
+      const productos = this.productos.filter(p => {
         const cumpleCategoria = !this.filtroCategoria || p.categoria === this.filtroCategoria;
-        const cumpleBusqueda = !this.busqueda || 
-          p.nombre.toLowerCase().includes(this.busqueda.toLowerCase()) ||
-          p.categoria.toLowerCase().includes(this.busqueda.toLowerCase());
-        return cumpleCategoria && cumpleBusqueda;
+        const textoBusqueda = String(this.busqueda || '').trim().toUpperCase();
+        const tallaProducto = String(p.talla || '').trim().toUpperCase();
+        const cumpleBusqueda = !textoBusqueda ||
+          String(p.nombre || '').toUpperCase().includes(textoBusqueda) ||
+          String(p.categoria || '').toUpperCase().includes(textoBusqueda) ||
+          tallaProducto.includes(textoBusqueda);
+        const precioMax = Number(this.filtroPrecioMax) || 500;
+        const cumplePrecio = Number(p.precio || 0) <= precioMax;
+        const tallasSeleccionadas = (this.filtroTallas || []).map(talla => String(talla || '').trim().toUpperCase());
+        const cumpleTalla = tallasSeleccionadas.length === 0 || tallasSeleccionadas.includes(tallaProducto);
+
+        return cumpleCategoria && cumpleBusqueda && cumplePrecio && cumpleTalla;
       });
+
+      const productosOrdenados = productos.slice();
+
+      if (this.ordenar === 'precio-asc') {
+        productosOrdenados.sort((a, b) => Number(a.precio || 0) - Number(b.precio || 0));
+      } else if (this.ordenar === 'precio-desc') {
+        productosOrdenados.sort((a, b) => Number(b.precio || 0) - Number(a.precio || 0));
+      } else if (this.ordenar === 'nombre') {
+        productosOrdenados.sort((a, b) => String(a.nombre || '').localeCompare(String(b.nombre || '')));
+      }
+
+      return productosOrdenados;
     },
 
     subtotal() {
@@ -149,6 +172,7 @@ createApp({
 
         if (response.ok && data.success) {
           this.mostrarMensaje('exito', data.mensaje || 'Registro exitoso');
+          this.notificarCambioClientes();
           // Cambiar a login automáticamente
           this.modoLogin = true;
           this.datosRegistro = {
@@ -200,6 +224,14 @@ createApp({
       }, 3000);
     },
 
+    limpiarFiltros() {
+      this.filtroCategoria = '';
+      this.filtroPrecioMax = 500;
+      this.filtroTallas = [];
+      this.ordenar = 'nuevo';
+      this.busqueda = '';
+    },
+
     // Funciones del carrito
     agregarAlCarrito(producto) {
       const itemExistente = this.carrito.find(item => item.id === producto.id);
@@ -238,7 +270,7 @@ createApp({
       }
     },
 
-      completarCompra() {
+      async completarCompra() {
       if (!this.autenticado) {
         this.mostrarMensaje('error', 'Debes iniciar sesión para comprar');
         setTimeout(() => {
@@ -254,13 +286,36 @@ createApp({
 
       this.cargando = true;
       try {
-        // Aquí iría la integración con Venta en el backend
+        const response = await fetch(`${API_URL}/ventas/checkout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            clienteId: this.usuarioActual.id,
+            total: Number(this.total.toFixed(2)),
+            metodoPago: 'EFECTIVO',
+            items: this.carrito.map(item => ({
+              id: item.id,
+              cantidad: item.cantidad,
+              precio: item.precio
+            }))
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Error al procesar la compra');
+        }
+
+        this.notificarCambioVentas();
         this.mostrarMensaje('exito', `Compra completada. Total: S/ ${this.total.toFixed(2)}`);
         this.carrito = [];
         this.guardarCarrito();
         this.vercion = 'inicio';
       } catch (error) {
-        this.mostrarMensaje('error', 'Error al procesar la compra');
+        this.mostrarMensaje('error', error.message || 'Error al procesar la compra');
       } finally {
         this.cargando = false;
       }
@@ -309,6 +364,7 @@ createApp({
         }
 
         await this.cargarProductos();
+        this.notificarCambioProductos();
         this.nuevoProducto = {
           codigo: '',
           nombre: '',
@@ -341,6 +397,7 @@ createApp({
           }
 
           await this.cargarProductos();
+          this.notificarCambioProductos();
           this.mostrarMensaje('exito', 'Producto eliminado');
         } catch (error) {
           this.mostrarMensaje('error', `Error: ${error.message}`);
@@ -350,7 +407,7 @@ createApp({
       }
     },
 
-    async cargarProductos() {
+    async cargarProductos(mostrarError = true) {
       this.cargando = true;
       try {
         const response = await fetch(`${API_URL}/productos`);
@@ -360,10 +417,30 @@ createApp({
         this.productos = await response.json();
       } catch (error) {
         console.error('Error:', error);
-        this.mostrarMensaje('error', 'No se pudo conectar con el servidor');
+        if (mostrarError) {
+          this.mostrarMensaje('error', 'No se pudo conectar con el servidor');
+        }
       } finally {
         this.cargando = false;
       }
+    },
+
+    notificarCambioProductos() {
+      localStorage.setItem('urbanflow_productos_sync', String(Date.now()));
+    },
+
+    notificarCambioClientes() {
+      localStorage.setItem('urbanflow_clientes_sync', JSON.stringify({
+        timestamp: Date.now(),
+        tipo: 'cliente_registrado'
+      }));
+    },
+
+    notificarCambioVentas() {
+      localStorage.setItem('urbanflow_ventas_sync', JSON.stringify({
+        timestamp: Date.now(),
+        tipo: 'venta_registrada'
+      }));
     },
 
     // Funciones Admin - Clientes
@@ -435,6 +512,22 @@ createApp({
     }
     this.cargarVentas();
     this.cargarCarrito();
+    this.onProductosSync = () => {
+      this.cargarProductos(false);
+    };
+    window.addEventListener('storage', this.onProductosSync);
+    this.productosRefreshTimer = setInterval(() => {
+      this.cargarProductos(false);
+    }, 10000);
+  },
+
+  beforeUnmount() {
+    if (this.productosRefreshTimer) {
+      clearInterval(this.productosRefreshTimer);
+    }
+    if (this.onProductosSync) {
+      window.removeEventListener('storage', this.onProductosSync);
+    }
   }
 
 }).mount('#app');

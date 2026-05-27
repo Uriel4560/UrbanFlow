@@ -59,37 +59,45 @@ public class DataInitializer implements CommandLineRunner {
             clienteRepository.save(cliente3);
         }
         
-        // Cargar usuarios si no existen
-        if (usuarioRepository.count() == 0) {
-            // Usuario Admin
-            Usuario admin = new Usuario(
-                "Administrador",
-                "admin@urbanflow.com",
-                "admin",
-                passwordEncoder.encode("admin123"),
-                "ADMIN"
-            );
-            usuarioRepository.save(admin);
-            
-            // Usuario Vendedor
-            Usuario vendedor = new Usuario(
-                "Carlos Vendedor",
-                "vendedor@urbanflow.com",
-                "vendedor",
-                passwordEncoder.encode("vendedor123"),
-                "VENDEDOR"
-            );
-            usuarioRepository.save(vendedor);
-            
-            // Usuario Gerente
-            Usuario gerente = new Usuario(
-                "María Gerente",
-                "gerente@urbanflow.com",
-                "gerente",
-                passwordEncoder.encode("gerente123"),
-                "GERENTE"
-            );
-            usuarioRepository.save(gerente);
+        // Cargar o completar usuarios requeridos
+        crearUsuarioSiNoExiste(
+            "Administrador",
+            "admin@urbanflow.com",
+            "admin",
+            "admin123",
+            "ADMIN"
+        );
+
+        crearUsuarioSiNoExiste(
+            "Vendedor",
+            "vendedor@urbanflow.com",
+            "vendedor",
+            "vendedor123",
+            "VENDEDOR"
+        );
+
+        crearUsuarioSiNoExiste(
+            "Gerente",
+            "gerente@urbanflow.com",
+            "gerente",
+            "gerente123",
+            "GERENTE"
+        );
+    }
+
+    private void crearUsuarioSiNoExiste(String nombre, String email, String usuario, String contraseña, String rol) {
+        if (usuarioRepository.findByUsuario(usuario).isPresent()) {
+            return;
         }
+
+        Usuario nuevoUsuario = new Usuario(
+            nombre,
+            email,
+            usuario,
+            passwordEncoder.encode(contraseña),
+            rol
+        );
+
+        usuarioRepository.save(nuevoUsuario);
     }
 }

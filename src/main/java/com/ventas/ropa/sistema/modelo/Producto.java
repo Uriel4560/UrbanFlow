@@ -51,9 +51,10 @@ public class Producto {
     
     private Boolean activo;
     
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;
     
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime fechaActualizacion;
     
     @PrePersist

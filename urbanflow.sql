@@ -2,8 +2,6 @@
 -- URBANFLOW - Base de Datos MySQL
 -- ============================================
 
--- Crear base de datos
-CREATE DATABASE IF NOT EXISTS urbanflow;
 USE urbanflow;
 
 -- Tabla: Usuarios (para admin login)
@@ -92,9 +90,11 @@ CREATE INDEX idx_detalles_venta ON detalles_venta(venta_id);
 -- DATOS DE PRUEBA
 -- ============================================
 
--- Insertar usuario admin de ejemplo (usuario: admin, contraseña: admin123)
-INSERT INTO usuarios (nombre, email, usuario, contraseña, rol, activo) VALUES
-('Administrador UrbanFlow', 'admin@urbanflow.com', 'admin', 'admin123', 'ADMIN', true);
+-- Insertar usuarios de ejemplo (usuario: admin, vendedor, gerente)
+INSERT IGNORE INTO usuarios (nombre, email, usuario, contraseña, rol, activo) VALUES
+('Administrador UrbanFlow', 'admin@urbanflow.com', 'admin', 'admin123', 'ADMIN', true),
+('Vendedor', 'vendedor@urbanflow.com', 'vendedor', 'vendedor123', 'VENDEDOR', true),
+('Gerente', 'gerente@urbanflow.com', 'gerente', 'gerente123', 'GERENTE', true);
 
 -- Insertar productos de ejemplo (Precios en Soles)
 INSERT INTO productos (codigo, nombre, descripcion, categoria, marca, talla, color, precio, stock, material, activo) VALUES
@@ -132,8 +132,7 @@ INSERT INTO detalles_venta (venta_id, producto_id, cantidad, precio_unitario, su
 -- ============================================
 -- Fin del script de UrbanFlow
 -- ============================================
+
 SELECT * FROM productos;
-SELECT * FROM clientes;
-=======
 SELECT * FROM clientes;
 SELECT * FROM ventas;

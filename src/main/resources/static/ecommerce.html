@@ -29,9 +29,6 @@
                     <a @click="vercion = 'catalogo'" :class="{activo: vercion === 'catalogo'}">
                         <i class="fas fa-shirt"></i> Catálogo
                     </a>
-                    <a @click="vercion = 'admin'" :class="{activo: vercion === 'admin'}">
-                        <i class="fas fa-cog"></i> Admin
-                    </a>
                 </nav>
                 <div class="header-right">
                     <div class="search-bar">
@@ -149,25 +146,25 @@
                         
                         <div class="filtro-grupo">
                             <h4>Género</h4>
-                            <label><input type="radio" v-model="filtroCategoria" value="" @change="aplicarFiltros"> Todos</label>
-                            <label><input type="radio" v-model="filtroCategoria" value="Hombres" @change="aplicarFiltros"> Hombres</label>
-                            <label><input type="radio" v-model="filtroCategoria" value="Mujeres" @change="aplicarFiltros"> Mujeres</label>
+                            <label><input type="radio" v-model="filtroCategoria" value=""> Todos</label>
+                            <label><input type="radio" v-model="filtroCategoria" value="Hombres"> Hombres</label>
+                            <label><input type="radio" v-model="filtroCategoria" value="Mujeres"> Mujeres</label>
                         </div>
 
                         <div class="filtro-grupo">
                             <h4>Rango de Precio</h4>
-                            <input type="range" v-model="filtroPrecioMax" min="0" max="500" @input="aplicarFiltros" class="slider">
-                            <p>Hasta ${{ filtroPrecioMax }}</p>
+                            <input type="range" v-model.number="filtroPrecioMax" min="0" max="500" class="slider">
+                            <p>Hasta S/ {{ filtroPrecioMax }}</p>
                         </div>
 
                         <div class="filtro-grupo">
                             <h4>Talla</h4>
-                            <label><input type="checkbox" v-model="filtroTallas" value="XS" @change="aplicarFiltros"> XS</label>
-                            <label><input type="checkbox" v-model="filtroTallas" value="S" @change="aplicarFiltros"> S</label>
-                            <label><input type="checkbox" v-model="filtroTallas" value="M" @change="aplicarFiltros"> M</label>
-                            <label><input type="checkbox" v-model="filtroTallas" value="L" @change="aplicarFiltros"> L</label>
-                            <label><input type="checkbox" v-model="filtroTallas" value="XL" @change="aplicarFiltros"> XL</label>
-                            <label><input type="checkbox" v-model="filtroTallas" value="XXL" @change="aplicarFiltros"> XXL</label>
+                            <label><input type="checkbox" v-model="filtroTallas" value="XS"> XS</label>
+                            <label><input type="checkbox" v-model="filtroTallas" value="S"> S</label>
+                            <label><input type="checkbox" v-model="filtroTallas" value="M"> M</label>
+                            <label><input type="checkbox" v-model="filtroTallas" value="L"> L</label>
+                            <label><input type="checkbox" v-model="filtroTallas" value="XL"> XL</label>
+                            <label><input type="checkbox" v-model="filtroTallas" value="XXL"> XXL</label>
                         </div>
 
                         <button @click="limpiarFiltros" class="btn-limpiar">Limpiar Filtros</button>
@@ -179,7 +176,7 @@
                             <h2>{{ filtroCategoria ? filtroCategoria : 'Todos' }} los Productos</h2>
                             <div class="ordenar">
                                 <label>Ordenar por:</label>
-                                <select v-model="ordenar" @change="aplicarFiltros">
+                                <select v-model="ordenar">
                                     <option value="nuevo">Más Nuevo</option>
                                     <option value="precio-asc">Precio: Menor a Mayor</option>
                                     <option value="precio-desc">Precio: Mayor a Menor</option>
@@ -202,10 +199,10 @@
                                     <h3>{{ producto.nombre }}</h3>
                                     <p class="marca">{{ producto.marca }}</p>
                                     <div class="rating-catalogo">
-                                        <i class="fas fa-star"></i> 4.5 ({{ Math.floor(Math.random() * 100) + 50 }} reseñas)
+                                        <i class="fas fa-star"></i> 4.5 (120 reseñas)
                                     </div>
                                     <div class="tallas-disponibles">
-                                        <span v-for="talla in ['XS', 'S', 'M', 'L', 'XL']" :key="talla" class="talla">{{ talla }}</span>
+                                        <span class="talla">{{ producto.talla }}</span>
                                     </div>
                                     <div class="precio-catalogo">
                                         <span class="precio-actual">S/ {{ producto.precio }}</span>

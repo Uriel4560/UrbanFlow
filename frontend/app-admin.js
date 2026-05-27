@@ -140,6 +140,7 @@ createApp({
         }
 
         await this.cargarProductos();
+        this.notificarCambioProductos();
         this.nuevoProducto = {
           codigo: '',
           nombre: '',
@@ -172,6 +173,7 @@ createApp({
           }
 
           await this.cargarProductos();
+          this.notificarCambioProductos();
           this.mostrarMensaje('exito', 'Producto eliminado');
         } catch (error) {
           this.mostrarMensaje('error', `Error: ${error.message}`);
@@ -181,7 +183,7 @@ createApp({
       }
     },
 
-    async cargarProductos() {
+    async cargarProductos(mostrarError = true) {
       try {
         const response = await fetch(`${API_URL}/productos`);
         if (!response.ok) {
@@ -190,8 +192,14 @@ createApp({
         this.productos = await response.json();
       } catch (error) {
         console.error('Error:', error);
-        this.mostrarMensaje('error', 'No se pudo cargar los productos');
+        if (mostrarError) {
+          this.mostrarMensaje('error', 'No se pudo cargar los productos');
+        }
       }
+    },
+
+    notificarCambioProductos() {
+      localStorage.setItem('urbanflow_productos_sync', String(Date.now()));
     },
 
     // ===== CLIENTES =====
@@ -269,6 +277,32 @@ createApp({
 
   mounted() {
     this.verificarSesion();
+    this.onStorageSync = (event) => {
+      if (event.key === 'urbanflow_productos_sync') {
+        this.cargarProductos(false);
+      }
+
+      if (event.key === 'urbanflow_clientes_sync') {
+        this.cargarClientes();
+      }
+
+      if (event.key === 'urbanflow_ventas_sync') {
+        this.cargarVentas();
+      }
+    };
+    window.addEventListener('storage', this.onStorageSync);
+    this.productosRefreshTimer = setInterval(() => {
+      this.cargarProductos(false);
+    }, 10000);
+  },
+
+  beforeUnmount() {
+    if (this.productosRefreshTimer) {
+      clearInterval(this.productosRefreshTimer);
+    }
+    if (this.onStorageSync) {
+      window.removeEventListener('storage', this.onStorageSync);
+    }
   }
 
 }).mount('#app');
