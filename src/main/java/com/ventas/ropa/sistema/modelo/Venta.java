@@ -36,6 +36,10 @@ public class Venta {
     private String metodoPago; // EFECTIVO, TARJETA, TRANSFERENCIA
     
     private String observaciones;
+
+    private String empty1;
+
+    private String DetallePedido1;
     
     @Column(nullable = false, updatable = false)
     private LocalDateTime fechaVenta;
