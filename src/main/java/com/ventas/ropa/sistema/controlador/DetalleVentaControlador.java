@@ -32,7 +32,7 @@ public class DetalleVentaControlador {
     @GetMapping
     @Operation(summary = "Obtener todos los detalles de venta", description = "Retorna la lista de todos los detalles de ventas")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista obtenida exitosamente")
+
     })
     public List<DetalleVenta> obtenerTodos() {
         return detalleVentaServicio.obtenerTodos();
@@ -41,8 +41,7 @@ public class DetalleVentaControlador {
     @GetMapping("/{id}")
     @Operation(summary = "Obtener detalle de venta por ID", description = "Retorna un detalle de venta específico")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Detalle encontrado"),
-            @ApiResponse(responseCode = "404", description = "Detalle no encontrado")
+
     })
     public ResponseEntity<DetalleVenta> obtenerPorId(@PathVariable Long id) {
         return detalleVentaServicio.obtenerPorId(id)
@@ -53,7 +52,7 @@ public class DetalleVentaControlador {
     @PostMapping
     @Operation(summary = "Crear detalle de venta", description = "Crea un nuevo detalle de venta")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Detalle creado exitosamente")
+
     })
     public DetalleVenta crear(@RequestBody DetalleVenta detalleVenta) {
         return detalleVentaServicio.guardar(detalleVenta);
@@ -62,11 +61,7 @@ public class DetalleVentaControlador {
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar detalle de venta", description = "Actualiza un detalle de venta existente")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Detalle actualizado exitosamente"),
-            @ApiResponse(responseCode = "404", description = "Detalle no encontrado")
-    })
-    public ResponseEntity<DetalleVenta> actualizar(@PathVariable Long id,
-            @RequestBody DetalleVenta detalleVentaActualizado) {
+
         return detalleVentaServicio.obtenerPorId(id)
                 .map(detalleVenta -> {
                     detalleVenta.setVenta(detalleVentaActualizado.getVenta());
@@ -84,8 +79,6 @@ public class DetalleVentaControlador {
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar detalle de venta", description = "Elimina un detalle de venta del sistema")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Detalle eliminado exitosamente"),
-            @ApiResponse(responseCode = "404", description = "Detalle no encontrado")
     })
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         if (detalleVentaServicio.obtenerPorId(id).isPresent()) {

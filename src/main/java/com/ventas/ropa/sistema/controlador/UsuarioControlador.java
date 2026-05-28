@@ -38,9 +38,7 @@ public class UsuarioControlador {
     @PostMapping("/login")
     @Operation(summary = "Login de usuario administrativo", description = "Autentica un usuario del sistema (admin, vendedor, gerente)")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Login exitoso"),
-            @ApiResponse(responseCode = "400", description = "Usuario o contraseña vacíos"),
-            @ApiResponse(responseCode = "401", description = "Credenciales inválidas")
+
     })
     public ResponseEntity<?> login(@RequestBody Map<String, String> credenciales) {
         String usuario = credenciales.get("usuario");
@@ -71,9 +69,7 @@ public class UsuarioControlador {
     @PostMapping("/cliente/login")
     @Operation(summary = "Login de cliente", description = "Autentica un cliente registrado en el sistema")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Login exitoso"),
-            @ApiResponse(responseCode = "400", description = "Email o contraseña vacíos"),
-            @ApiResponse(responseCode = "401", description = "Credenciales inválidas")
+
     })
     public ResponseEntity<?> loginCliente(@RequestBody Map<String, String> credenciales) {
         String email = credenciales.get("email");
@@ -104,8 +100,7 @@ public class UsuarioControlador {
     @PostMapping("/cliente/registro")
     @Operation(summary = "Registro de nuevo cliente", description = "Crea una nueva cuenta de cliente en el sistema")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Cliente registrado exitosamente"),
-            @ApiResponse(responseCode = "400", description = "Campos incompletos o email ya registrado")
+
     })
     public ResponseEntity<?> registroCliente(@RequestBody Map<String, String> datos) {
         String nombre = datos.get("nombre");
