@@ -25,8 +25,14 @@ import com.ventas.ropa.sistema.servicio.DetalleVentaServicio;
 import com.ventas.ropa.sistema.servicio.ProductoServicio;
 import com.ventas.ropa.sistema.servicio.VentaServicio;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping("/api/ventas")
+@Tag(name = "Ventas", description = "Gestión de ventas y checkout")
 public class VentaControlador {
     
     @Autowired
@@ -42,11 +48,20 @@ public class VentaControlador {
     private DetalleVentaServicio detalleVentaServicio;
 
     @GetMapping
+    @Operation(summary = "Obtener todas las ventas", description = "Retorna la lista completa de ventas")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de ventas obtenida exitosamente")
+    })
     public List<Venta> obtenerTodas() {
         return ventaServicio.obtenerTodas();
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obtener venta por ID", description = "Retorna una venta específica según su ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Venta encontrada"),
+        @ApiResponse(responseCode = "404", description = "Venta no encontrada")
+    })
     public ResponseEntity<Venta> obtenerPorId(@PathVariable Long id) {
         return ventaServicio.obtenerPorId(id)
                 .map(ResponseEntity::ok)
@@ -54,12 +69,22 @@ public class VentaControlador {
     }
 
     @PostMapping
+    @Operation(summary = "Crear venta", description = "Crea una nueva venta en el sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Venta creada exitosamente")
+    })
     public Venta crear(@RequestBody Venta venta) {
         return ventaServicio.guardar(venta);
     }
 
     @PostMapping("/checkout")
     @Transactional
+    @Operation(summary = "Procesar checkout", description = "Procesa el checkout con validación de datos, stock y creación de detalles de venta")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Compra procesada exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos o carrito vacío"),
+        @ApiResponse(responseCode = "404", description = "Cliente o producto no encontrado")
+    })
     public ResponseEntity<?> checkout(@RequestBody Map<String, Object> datos) {
         Object clienteIdObj = datos.get("clienteId");
         Object totalObj = datos.get("total");
@@ -143,6 +168,11 @@ public class VentaControlador {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Actualizar venta", description = "Actualiza los datos de una venta existente")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Venta actualizada exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Venta no encontrada")
+    })
     public ResponseEntity<Venta> actualizar(@PathVariable Long id, @RequestBody Venta ventaActualizada) {
         return ventaServicio.obtenerPorId(id)
                 .map(venta -> {
@@ -159,6 +189,11 @@ public class VentaControlador {
     }
     
     @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar venta", description = "Elimina una venta del sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Venta eliminada exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Venta no encontrada")
+    })
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         if (ventaServicio.obtenerPorId(id).isPresent()) {
             ventaServicio.eliminar(id);

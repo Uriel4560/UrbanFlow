@@ -17,8 +17,14 @@ import com.ventas.ropa.sistema.modelo.Usuario;
 import com.ventas.ropa.sistema.servicio.ClienteServicio;
 import com.ventas.ropa.sistema.servicio.UsuarioServicio;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Autenticación", description = "Endpoints de login y registro")
 public class UsuarioControlador {
     
     @Autowired
@@ -30,6 +36,12 @@ public class UsuarioControlador {
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     
     @PostMapping("/login")
+    @Operation(summary = "Login de usuario administrativo", description = "Autentica un usuario del sistema (admin, vendedor, gerente)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Login exitoso"),
+        @ApiResponse(responseCode = "400", description = "Usuario o contraseña vacíos"),
+        @ApiResponse(responseCode = "401", description = "Credenciales inválidas")
+    })
     public ResponseEntity<?> login(@RequestBody Map<String, String> credenciales) {
         String usuario = credenciales.get("usuario");
         String contraseña = credenciales.get("contraseña");
@@ -57,6 +69,12 @@ public class UsuarioControlador {
     
     // ===== LOGIN CLIENTE =====
     @PostMapping("/cliente/login")
+    @Operation(summary = "Login de cliente", description = "Autentica un cliente registrado en el sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Login exitoso"),
+        @ApiResponse(responseCode = "400", description = "Email o contraseña vacíos"),
+        @ApiResponse(responseCode = "401", description = "Credenciales inválidas")
+    })
     public ResponseEntity<?> loginCliente(@RequestBody Map<String, String> credenciales) {
         String email = credenciales.get("email");
         String contraseña = credenciales.get("contraseña");
@@ -84,6 +102,11 @@ public class UsuarioControlador {
     
     // ===== REGISTRO CLIENTE =====
     @PostMapping("/cliente/registro")
+    @Operation(summary = "Registro de nuevo cliente", description = "Crea una nueva cuenta de cliente en el sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Cliente registrado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Campos incompletos o email ya registrado")
+    })
     public ResponseEntity<?> registroCliente(@RequestBody Map<String, String> datos) {
         String nombre = datos.get("nombre");
         String email = datos.get("email");
