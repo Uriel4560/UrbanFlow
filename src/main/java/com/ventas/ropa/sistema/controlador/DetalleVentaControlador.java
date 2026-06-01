@@ -17,9 +17,8 @@ import com.ventas.ropa.sistema.modelo.DetalleVenta;
 import com.ventas.ropa.sistema.servicio.DetalleVentaServicio;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/detalles-venta")
@@ -61,7 +60,8 @@ public class DetalleVentaControlador {
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar detalle de venta", description = "Actualiza un detalle de venta existente")
     @ApiResponses(value = {
-
+    })
+    public ResponseEntity<DetalleVenta> actualizar(@PathVariable Long id, @RequestBody DetalleVenta detalleVentaActualizado) {
         return detalleVentaServicio.obtenerPorId(id)
                 .map(detalleVenta -> {
                     detalleVenta.setVenta(detalleVentaActualizado.getVenta());
