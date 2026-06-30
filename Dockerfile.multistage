@@ -1,0 +1,28 @@
+# =========================================================
+# ETAPA 1: Entorno de Compilación y Construcción (Build)
+# =========================================================
+# Se utiliza una imagen oficial de Maven con JDK 17 para compilar el código fuente.
+FROM maven:3.9 AS build
+
+# Definición del directorio de trabajo interno en el contenedor
+WORKDIR /app
+
+# Copia de la totalidad del código fuente y configuraciones (pom.xml) al contenedor
+COPY . .
+
+# Ejecución de la compilación automatizada empaquetando el proyecto en un archivo .jar
+# Se añade el flag -DskipTests para agilizar el proceso omitiendo las pruebas unitarias.
+RUN mvn clean package -DskipTests
+
+# =========================================================
+# ETAPA 2: Entorno de Ejecución en Producción (Runtime)
+# =========================================================
+# Se transiciona a una imagen optimizada basada en Eclipse Temurin JRE 17, libre de Maven.
+FROM eclipse-temurin:17-jre
+
+# Operación crítica: Se extrae únicamente el archivo .jar generado en la etapa 'build'
+# Esto evita arrastrar las capas pesadas de la fase anterior al contenedor final.
+COPY --from=build /app/target/*.jar app.jar
+
+# Comando de arranque que ejecuta la aplicación de forma segura al levantar el contenedor
+ENTRYPOINT ["java", "-jar", "app.jar"]
