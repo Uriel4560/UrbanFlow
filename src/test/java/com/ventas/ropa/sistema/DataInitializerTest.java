@@ -37,7 +37,6 @@ class DataInitializerTest {
     void run_debeCrearUsuariosFaltantesAunqueLaTablaNoEsteVacia() throws Exception {
         when(productoRepository.count()).thenReturn(1L);
         when(clienteRepository.count()).thenReturn(1L);
-        when(usuarioRepository.count()).thenReturn(1L);
 
         Usuario adminExistente = new Usuario(
                 "Administrador",

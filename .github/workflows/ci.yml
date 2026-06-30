@@ -1,82 +1,26 @@
-name: CI Spring Boot - UrbanFlow
+name: CI Spring Boot
 
 on:
   push:
     branches:
       - develop
-      - main
   pull_request:
     branches:
       - develop
 
 jobs:
-  build-and-test:
-    name: Build and Test
+  build:
     runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        java-version: [17]
 
     steps:
-      # Paso 1: Descargar el código
-      - name: Checkout código
+      - name: Descargar código
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      # Paso 2: Configurar Java
-      - name: Setup Java JDK
+      - name: Configurar Java
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.java-version }}
+          java-version: '17'
           distribution: 'temurin'
-          cache: maven
 
-      # Paso 3: Validar estructura Maven
-      - name: Validar pom.xml
-        run: mvn validate
-
-      # Paso 4: Compilar código
-      - name: Compilar código
-        run: mvn clean compile
-
-      # Paso 5: Ejecutar pruebas unitarias
-      - name: Ejecutar tests unitarios
-        run: mvn test
-
-      # Paso 6: Empaquetar aplicación
-      - name: Empaquetar JAR
-        run: mvn package -DskipTests
-
-      # Paso 7: Verificar artefacto
-      - name: Verificar JAR generado
-        run: ls -lh target/*.jar
-
-      # Paso 8: Publicar resultados de pruebas
-      - name: Publicar resultados de tests
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports-java${{ matrix.java-version }}
-          path: target/surefire-reports/
-          retention-days: 30
-
-      # Paso 9: Publicar JAR como artefacto
-      - name: Publicar JAR generado
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: urbanflow-jar-java${{ matrix.java-version }}
-          path: target/urbanflow-*.jar
-          retention-days: 30
-
-      # Paso 10: Notificar éxito
-      - name: Notificar éxito
-        if: success()
-        run: echo "✅ Build completado exitosamente"
-
-      # Paso 11: Notificar fallo
-      - name: Notificar fallo
-        if: failure()
-        run: echo "❌ Build falló, revisa los logs arriba"
+      - name: Ejecutar pruebas
+        run: ./mvnw test
