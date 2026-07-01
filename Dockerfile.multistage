@@ -17,8 +17,8 @@ RUN mvn clean package -DskipTests
 # =========================================================
 # ETAPA 2: Entorno de Ejecución en Producción (Runtime)
 # =========================================================
-# Se transiciona a una imagen optimizada basada en Eclipse Temurin JRE 17, libre de Maven.
-FROM eclipse-temurin:17-jre
+# Se transiciona a una imagen optimizada basada en Eclipse Temurin JRE , libre de Maven.
+FROM eclipse-temurin:21-jre
 
 # Operación crítica: Se extrae únicamente el archivo .jar generado en la etapa 'build'
 # Esto evita arrastrar las capas pesadas de la fase anterior al contenedor final.
