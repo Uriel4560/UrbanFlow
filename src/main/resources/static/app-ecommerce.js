@@ -1,7 +1,7 @@
 const { createApp } = Vue;
 
 // URL base del API
-const API_URL = 'http://localhost:8080/api';
+const API_URL = 'https://urbanflow-2anh.onrender.com/api';
 
 createApp({
   data() {
