@@ -5,7 +5,7 @@
 UrbanFlow es un sistema integral de gestión de pedidos, ventas e inventario para una tienda de ropa. Automatiza el control de stock, el checkout con cálculo de totales y la autenticación de administradores y clientes, mediante una API REST construida con Spring Boot y MySQL.
 
 🔗 **Demo en vivo:** aún no desplegada — el proyecto corre en local siguiendo los pasos de la sección [Instalación y ejecución](#instalación-y-ejecución-local).
-> Si más adelante despliegan el proyecto (por ejemplo en Railway, Render o un VPS), reemplacen esta línea por el enlace real.
+Link -> https://urbanflow-frontend-q5xo.onrender.com/ecommerce.html
 
 ---
 
